@@ -31,34 +31,43 @@ const installationTypes = [
   { type: 'Nietypowy', multiplier: 1.5 }
 ];
 
-const WindowConfigurator = () => {
-  const createSection = (type, width, height) => ({
-    id: Date.now(),
-    type: type || 'Stałe',
-    isActive: false,
-    width: width || 100,
-    height: height || 100
-  });
+const createSection = (type = 'Stałe', width = 100, height = 100) => ({
+  id: Date.now() + Math.random(), // Ensure unique IDs
+  type,
+  width,
+  height,
+  isActive: false
+});
 
-  function createNewWindow() {
-    return {
-      id: Date.now(),
-      width: 300,
-      height: 250,
-      material: materials[0],
-      glassType: glassTypes[0],
-      color: colors[0],
-      columns: 2,
-      rows: 2,
-      sections: [
-        createSection("Uchylno-rozwieralne"),
-        createSection("Uchylno-rozwieralne", 155, 100),
-        createSection("Stałe", 100, 60),
-        createSection()
-      ]
-    };
+const createInitialSections = (columns, rows) => {
+  const sections = [];
+  const totalSections = columns * rows;
+  
+  // Create default sections
+  for (let i = 0; i < totalSections; i++) {
+    sections[i] = createSection(
+      i === 0 || i === 1 ? 'Uchylno-rozwieralne' : 'Stałe',
+      i === 1 ? 155 : 100,
+      i === 2 ? 60 : 100
+    );
   }
+  
+  return sections;
+};
 
+const createNewWindow = () => ({
+  id: Date.now(),
+  width: 300,
+  height: 250,
+  material: materials[0],
+  glassType: glassTypes[0],
+  color: colors[0],
+  columns: 2,
+  rows: 2,
+  sections: createInitialSections(2, 2)
+});
+
+const WindowConfigurator = () => {
   const [project, setProject] = useState({
     windows: [createNewWindow()],
     installationType: installationTypes[0]
@@ -69,19 +78,24 @@ const WindowConfigurator = () => {
 
   const updateWindowGrid = (windowIndex, newColumns, newRows) => {
     const totalSections = newColumns * newRows;
-    const currentSections = project.windows[windowIndex].sections;
+    const currentWindow = project.windows[windowIndex];
+    const currentSections = currentWindow.sections;
     
-    let newSections = [];
+    // Create new sections array with proper length
+    const newSections = [];
     for (let i = 0; i < totalSections; i++) {
+      // Reuse existing section if available, otherwise create new
       newSections[i] = currentSections[i] || createSection();
     }
 
+    // Update the window with new grid dimensions and sections
     updateWindow(windowIndex, {
       columns: newColumns,
       rows: newRows,
-      sections: newSections
+      sections: newSections // This now has exactly the right number of sections
     });
   };
+
 
   const updateSection = (windowIndex, sectionIndex, updates) => {
     const newWindows = [...project.windows];
