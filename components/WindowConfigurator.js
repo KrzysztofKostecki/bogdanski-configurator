@@ -22,25 +22,30 @@ const installationTypes = [
 ];
 
 const WindowConfigurator = () => {
-  const createSection = () => ({
+  const createSection = (type, width, height) => ({
     id: Date.now(),
-    type: 'Stałe',
+    type: type || 'Stałe',
     isActive: false,
-    width: 100, // Width percentage of the total window width
-    height: 100 // Height percentage of the total window height
+    width: width || 100, // Width percentage of the total window width
+    height: height || 100 // Height percentage of the total window height
   });
 
   function createNewWindow() {
     return {
       id: Date.now(),
-      width: 100,
-      height: 100,
+      width: 300,
+      height: 250,
       material: materials[0],
       glassType: glassTypes[0],
       color: colors[0],
-      columns: 1,
-      rows: 1,
-      sections: [createSection()]
+      columns: 2,
+      rows: 2,
+      sections: [
+        createSection("Uchylno-rozwieralne"),
+        createSection("Uchylno-rozwieralne", 155, 100),
+        createSection("Stałe", 100, 60),
+        createSection()
+      ]
     };
   }
 
