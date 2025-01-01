@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { Plus, Minus, X, Save } from 'lucide-react';
+import { 
+  PlusIcon, 
+  MinusIcon, 
+  XIcon, 
+  SaveIcon, 
+  MenuIcon, 
+  LayoutGridIcon 
+} from 'lucide-react';
 
 // Enhanced brand colors with additional shades
 const BRAND_COLORS = {
@@ -58,6 +65,7 @@ const WindowConfigurator = () => {
   });
   const [activeWindowIndex, setActiveWindowIndex] = useState(0);
   const [activeSectionIndex, setActiveSectionIndex] = useState(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const updateWindowGrid = (windowIndex, newColumns, newRows) => {
     const totalSections = newColumns * newRows;
@@ -152,115 +160,148 @@ const WindowConfigurator = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6 bg-white">
-      {/* Logo and header */}
-      <div className="flex items-center gap-2 mb-8">
-        <div className="flex items-center gap-1">
-          <div 
-            className="w-8 h-8 flex items-center justify-center text-white font-bold rounded shadow-lg"
-            style={{ backgroundColor: BRAND_COLORS.primary }}
-          >
-            B
+    <div className="max-w-6xl mx-auto p-4 sm:p-6 bg-white">
+      {/* Mobile Header with Collapsible Menu */}
+      <div className="flex flex-col">
+        {/* Logo and Header */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <div 
+              className="w-8 h-8 flex items-center justify-center text-white font-bold rounded shadow-lg"
+              style={{ backgroundColor: BRAND_COLORS.primary }}
+            >
+              B
+            </div>
+            <div className="text-xl font-bold" style={{ color: BRAND_COLORS.primary }}>
+              BOGDAŃSKI
+            </div>
           </div>
-          <div className="text-xl font-bold" style={{ color: BRAND_COLORS.primary }}>
-            BOGDAŃSKI
+          
+          {/* Mobile Menu Toggle */}
+          <div className="sm:hidden">
+            <button 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2 rounded-md hover:bg-gray-100"
+            >
+              <MenuIcon />
+            </button>
           </div>
         </div>
-        <div className="h-6 w-px bg-gray-300 mx-4" />
-        <h1 className="text-2xl font-bold" style={{ color: BRAND_COLORS.secondary }}>
+
+        <h1 
+          className="text-2xl font-bold mb-4 text-center sm:text-left" 
+          style={{ color: BRAND_COLORS.secondary }}
+        >
           Konfigurator okien
         </h1>
       </div>
       
-      {/* Windows list */}
-      <div className="flex gap-4 mb-6 overflow-x-auto p-2">
+      {/* Windows List - More Responsive */}
+      <div className="flex flex-wrap gap-2 mb-4 justify-center sm:justify-start overflow-x-auto">
         {project.windows.map((window, index) => (
-          <div 
+          <button 
             key={window.id}
-            className={`flex items-center gap-2 p-3 rounded cursor-pointer transition-all duration-200 border-2
-              ${index === activeWindowIndex ? 'border-red-500 bg-red-50 shadow-md' : 'border-gray-200 hover:bg-gray-50'}`}
-            style={{ borderColor: index === activeWindowIndex ? BRAND_COLORS.primary : undefined }}
+            className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-all duration-200 
+              ${index === activeWindowIndex 
+                ? 'bg-red-100 border-2 border-red-500 shadow-sm' 
+                : 'bg-gray-100 hover:bg-gray-200 border-2 border-transparent'}`}
             onClick={() => setActiveWindowIndex(index)}
           >
+            <LayoutGridIcon size={16} />
             <span>Okno {index + 1}</span>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                removeWindow(index);
-              }}
-              className="p-1 hover:bg-red-100 rounded transition-colors"
-            >
-              <X size={16} />
-            </button>
-          </div>
+            {project.windows.length > 1 && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removeWindow(index);
+                }}
+                className="ml-2 text-red-500 hover:bg-red-200 rounded-full p-1 transition-colors"
+              >
+                <XIcon size={16} />
+              </button>
+            )}
+          </button>
         ))}
         <button
           onClick={addWindow}
-          className="flex items-center gap-2 px-4 py-2 text-white rounded hover:bg-red-600 transition-colors shadow-md"
+          className="flex items-center gap-2 px-4 py-2 text-white rounded-lg hover:opacity-90 transition-opacity shadow-md"
           style={{ backgroundColor: BRAND_COLORS.primary }}
         >
-          <Plus size={20} />
+          <PlusIcon size={20} />
           Dodaj okno
         </button>
       </div>
 
-      {/* Configuration panel */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Controls */}
-        <div className="space-y-6 bg-gray-50 p-6 rounded-lg shadow-md">
+      {/* Responsive Grid Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Controls - Mobile Friendly */}
+        <div className={`
+          ${isMobileMenuOpen ? 'block' : 'hidden'} sm:block 
+          bg-gray-50 p-4 sm:p-6 rounded-lg shadow-md space-y-6
+        `}>
           {/* Grid configuration */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Sekcje okna</label>
+          <div className="bg-white rounded-lg p-4 shadow-sm">
+            <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+              <LayoutGridIcon size={20} />
+              Sekcje okna
+            </h3>
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <span className="text-sm text-gray-500">Kolumny</span>
-                <div className="flex items-center gap-2">
+              {/* Columns control */}
+              <div className="flex flex-col">
+                <span className="text-sm text-gray-600 mb-2">Kolumny</span>
+                <div className="flex items-center bg-gray-100 rounded-lg p-1">
                   <button
                     onClick={() => updateWindowGrid(
                       activeWindowIndex,
                       Math.max(1, activeWindow.columns - 1),
                       activeWindow.rows
                     )}
-                    className="p-1 hover:bg-gray-200 rounded transition-colors"
+                    className="p-2 hover:bg-gray-200 rounded-l-lg transition-colors"
                   >
-                    <Minus size={16} />
+                    <MinusIcon size={16} />
                   </button>
-                  <span className="w-8 text-center">{activeWindow.columns}</span>
+                  <span className="flex-grow text-center font-medium">
+                    {activeWindow.columns}
+                  </span>
                   <button
                     onClick={() => updateWindowGrid(
                       activeWindowIndex,
                       Math.min(4, activeWindow.columns + 1),
                       activeWindow.rows
                     )}
-                    className="p-1 hover:bg-gray-200 rounded transition-colors"
+                    className="p-2 hover:bg-gray-200 rounded-r-lg transition-colors"
                   >
-                    <Plus size={16} />
+                    <PlusIcon size={16} />
                   </button>
                 </div>
               </div>
-              <div>
-                <span className="text-sm text-gray-500">Rzędy</span>
-                <div className="flex items-center gap-2">
+
+              {/* Rows control */}
+              <div className="flex flex-col">
+                <span className="text-sm text-gray-600 mb-2">Rzędy</span>
+                <div className="flex items-center bg-gray-100 rounded-lg p-1">
                   <button
                     onClick={() => updateWindowGrid(
                       activeWindowIndex,
                       activeWindow.columns,
                       Math.max(1, activeWindow.rows - 1)
                     )}
-                    className="p-1 hover:bg-gray-200 rounded transition-colors"
+                    className="p-2 hover:bg-gray-200 rounded-l-lg transition-colors"
                   >
-                    <Minus size={16} />
+                    <MinusIcon size={16} />
                   </button>
-                  <span className="w-8 text-center">{activeWindow.rows}</span>
+                  <span className="flex-grow text-center font-medium">
+                    {activeWindow.rows}
+                  </span>
                   <button
                     onClick={() => updateWindowGrid(
                       activeWindowIndex,
                       activeWindow.columns,
                       Math.min(4, activeWindow.rows + 1)
                     )}
-                    className="p-1 hover:bg-gray-200 rounded transition-colors"
+                    className="p-2 hover:bg-gray-200 rounded-r-lg transition-colors"
                   >
-                    <Plus size={16} />
+                    <PlusIcon size={16} />
                   </button>
                 </div>
               </div>
@@ -435,109 +476,116 @@ const WindowConfigurator = () => {
         </div>
 
         {/* Preview */}
-        <div className="space-y-6">
-          <div className="bg-gray-50 p-6 rounded-lg shadow-lg">
-            <h3 className="text-lg font-medium mb-4">Podgląd</h3>
-            <div className="relative w-full" style={{ paddingBottom: '100%' }}>
-              <div className="absolute inset-0 flex items-center justify-center perspective-1000">
-                <div 
-                  className="relative transition-transform duration-500"
-                  style={{ transform: 'rotateX(10deg) rotateY(-20deg)' }}
-                >
-                  {/* Enhanced wall backdrop with texture */}
+        <div className="space-y-4">
+          <div className="bg-gray-50 p-4 sm:p-6 rounded-lg shadow-lg">
+            <h3 className="text-lg font-medium mb-4 flex items-center gap-2">
+              <LayoutGridIcon size={20} />
+              Podgląd
+            </h3>
+            <div 
+              className="w-full aspect-square flex items-center justify-center perspective-1000"
+            >
+              <div className="relative w-full" style={{ paddingBottom: '100%' }}>
+                <div className="absolute inset-0 flex items-center justify-center perspective-1000">
                   <div 
-                    className="absolute -inset-8 bg-gradient-to-br from-gray-100 to-gray-300"
-                    style={{
-                      transform: 'translateZ(-20px)',
-                      boxShadow: 'inset 0 0 50px rgba(0,0,0,0.15)',
-                      backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(0,0,0,0.03) 20px, rgba(0,0,0,0.03) 21px)',
-                    }}
-                  />
-                  
-                  {/* Window frame with enhanced shadows and reflections */}
-                  <div 
-                    className="relative transition-all duration-300"
-                    style={{
-                      width: `${activeWindow.width}px`,
-                      height: `${activeWindow.height}px`,
-                      maxWidth: '100%',
-                      maxHeight: '100%',
-                      backgroundColor: '#f8f9fa',
-                      boxShadow: '0 20px 25px rgba(0,0,0,0.3), inset 0 0 30px rgba(255,255,255,0.5)',
-                      border: `8px solid ${getWindowColorStyles(activeWindow.color).border}`,
-                      borderRadius: '4px',
-                      transform: 'translateZ(0)',
-                      position: 'relative',
-                      overflow: 'hidden'
-                    }}
+                    className="relative transition-transform duration-500"
+                    style={{ transform: 'rotateX(10deg) rotateY(-20deg)' }}
                   >
-                    {/* Glass reflection effect */}
+                    {/* Enhanced wall backdrop with texture */}
                     <div 
-                      className="absolute inset-0 opacity-20"
+                      className="absolute -inset-8 bg-gradient-to-br from-gray-100 to-gray-300"
                       style={{
-                        background: 'linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 50%, rgba(0,0,0,0.1) 100%)',
-                        pointerEvents: 'none'
+                        transform: 'translateZ(-20px)',
+                        boxShadow: 'inset 0 0 50px rgba(0,0,0,0.15)',
+                        backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(0,0,0,0.03) 20px, rgba(0,0,0,0.03) 21px)',
                       }}
                     />
-
-                    {/* Window sections grid */}
+                    
+                    {/* Window frame with enhanced shadows and reflections */}
                     <div 
-                      className="absolute inset-0 grid gap-1"
+                      className="relative transition-all duration-300"
                       style={{
-                        display: 'grid',
-                        gridTemplateColumns: activeWindow.sections
-                          .slice(0, activeWindow.columns)
-                          .map(section => `${section.width}fr`)
-                          .join(' '),
-                        gridTemplateRows: activeWindow.sections
-                          .reduce((acc, section, i) => {
-                            const row = Math.floor(i / activeWindow.columns);
-                            if (!acc[row]) acc[row] = section.height;
-                            return acc;
-                          }, [])
-                          .map(height => `${height}fr`)
-                          .join(' ')
+                        width: `${activeWindow.width}px`,
+                        height: `${activeWindow.height}px`,
+                        maxWidth: '100%',
+                        maxHeight: '100%',
+                        backgroundColor: '#f8f9fa',
+                        boxShadow: '0 20px 25px rgba(0,0,0,0.3), inset 0 0 30px rgba(255,255,255,0.5)',
+                        border: `8px solid ${getWindowColorStyles(activeWindow.color).border}`,
+                        borderRadius: '4px',
+                        transform: 'translateZ(0)',
+                        position: 'relative',
+                        overflow: 'hidden'
                       }}
                     >
-                      {activeWindow.sections.map((section, index) => (
-                        <div
-                          key={section.id}
-                          className={`relative border transition-all duration-300 cursor-pointer
-                            ${index === activeSectionIndex ? 'border-red-500 shadow-inner' : 'border-gray-300'}`}
-                          onClick={() => setActiveSectionIndex(index)}
-                          style={{
-                            background: 'linear-gradient(to bottom right, rgba(255,255,255,0.1), rgba(0,0,0,0.05))'
-                          }}
-                        >
-                          {section.type !== 'Stałe' && (
-                            <>
-                              {/* Enhanced handle with 3D effect */}
-                              <div 
-                                className="absolute right-1 top-1/2 w-2 h-4 rounded-full transition-all duration-300"
-                                style={{
-                                  transform: 'translateY(-50%) translateZ(2px)',
-                                  background: `linear-gradient(90deg, ${getWindowColorStyles(activeWindow.color).handles}, ${getWindowColorStyles(activeWindow.color).handles})`,
-                                  boxShadow: '0 1px 3px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.2)'
-                                }}
-                              />
-                              
-                              {/* Opening indicators with enhanced visibility */}
-                              {section.type === 'Uchylno-rozwieralne' && (
-                                <>
-                                  <div className="absolute inset-x-0 top-0 h-0.5 bg-gray-400 opacity-50" />
+                      {/* Glass reflection effect */}
+                      <div 
+                        className="absolute inset-0 opacity-20"
+                        style={{
+                          background: 'linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 50%, rgba(0,0,0,0.1) 100%)',
+                          pointerEvents: 'none'
+                        }}
+                      />
+
+                      {/* Window sections grid */}
+                      <div 
+                        className="absolute inset-0 grid gap-1"
+                        style={{
+                          display: 'grid',
+                          gridTemplateColumns: activeWindow.sections
+                            .slice(0, activeWindow.columns)
+                            .map(section => `${section.width}fr`)
+                            .join(' '),
+                          gridTemplateRows: activeWindow.sections
+                            .reduce((acc, section, i) => {
+                              const row = Math.floor(i / activeWindow.columns);
+                              if (!acc[row]) acc[row] = section.height;
+                              return acc;
+                            }, [])
+                            .map(height => `${height}fr`)
+                            .join(' ')
+                        }}
+                      >
+                        {activeWindow.sections.map((section, index) => (
+                          <div
+                            key={section.id}
+                            className={`relative border transition-all duration-300 cursor-pointer
+                              ${index === activeSectionIndex ? 'border-red-500 shadow-inner' : 'border-gray-300'}`}
+                            onClick={() => setActiveSectionIndex(index)}
+                            style={{
+                              background: 'linear-gradient(to bottom right, rgba(255,255,255,0.1), rgba(0,0,0,0.05))'
+                            }}
+                          >
+                            {section.type !== 'Stałe' && (
+                              <>
+                                {/* Enhanced handle with 3D effect */}
+                                <div 
+                                  className="absolute right-1 top-1/2 w-2 h-4 rounded-full transition-all duration-300"
+                                  style={{
+                                    transform: 'translateY(-50%) translateZ(2px)',
+                                    background: `linear-gradient(90deg, ${getWindowColorStyles(activeWindow.color).handles}, ${getWindowColorStyles(activeWindow.color).handles})`,
+                                    boxShadow: '0 1px 3px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.2)'
+                                  }}
+                                />
+                                
+                                {/* Opening indicators with enhanced visibility */}
+                                {section.type === 'Uchylno-rozwieralne' && (
+                                  <>
+                                    <div className="absolute inset-x-0 top-0 h-0.5 bg-gray-400 opacity-50" />
+                                    <div className="absolute inset-y-0 right-0 w-0.5 bg-gray-400 opacity-50" />
+                                  </>
+                                )}
+                                {section.type === 'Rozwierane' && (
                                   <div className="absolute inset-y-0 right-0 w-0.5 bg-gray-400 opacity-50" />
-                                </>
-                              )}
-                              {section.type === 'Rozwierane' && (
-                                <div className="absolute inset-y-0 right-0 w-0.5 bg-gray-400 opacity-50" />
-                              )}
-                              {section.type === 'Uchylne' && (
-                                <div className="absolute inset-x-0 top-0 h-0.5 bg-gray-400 opacity-50" />
-                              )}
-                            </>
-                          )}
-                        </div>
-                      ))}
+                                )}
+                                {section.type === 'Uchylne' && (
+                                  <div className="absolute inset-x-0 top-0 h-0.5 bg-gray-400 opacity-50" />
+                                )}
+                              </>
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -546,8 +594,11 @@ const WindowConfigurator = () => {
           </div>
 
           {/* Pricing */}
-          <div className="bg-gray-50 p-6 rounded-lg shadow-md">
-            <h3 className="text-lg font-medium mb-4">Wycena szacunkowa</h3>
+          <div className="bg-gray-50 p-4 sm:p-6 rounded-lg shadow-md">
+            <h3 className="text-lg font-medium mb-4 flex items-center gap-2">
+              <SaveIcon size={20} />
+              Wycena szacunkowa
+            </h3>
             <div className="space-y-2">
               <div className="flex justify-between items-center p-2 bg-white rounded shadow-sm">
                 <span>Cena podstawowa:</span>
@@ -565,10 +616,10 @@ const WindowConfigurator = () => {
 
           {/* Save button */}
           <button 
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 text-white rounded hover:bg-red-600 transition-colors shadow-lg"
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 text-white rounded-lg hover:opacity-90 transition-opacity shadow-lg text-lg font-semibold"
             style={{ backgroundColor: BRAND_COLORS.primary }}
           >
-            <Save size={20} />
+            <SaveIcon size={24} />
             Zapisz projekt
           </button>
         </div>
