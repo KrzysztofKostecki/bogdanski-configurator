@@ -118,9 +118,24 @@ const WindowConfigurator = () => {
 
   return (
     <div className="max-w-6xl mx-auto p-6 bg-white">
-      <h1 className="text-3xl font-bold mb-6" style={{ color: BRAND_COLORS.secondary }}>
-        Konfigurator okien Bogdański
-      </h1>
+      {/* Logo and header */}
+      <div className="flex items-center gap-2 mb-8">
+        <div className="flex items-center gap-1">
+          <div 
+            className="w-8 h-8 flex items-center justify-center text-white font-bold rounded"
+            style={{ backgroundColor: BRAND_COLORS.primary }}
+          >
+            B
+          </div>
+          <div className="text-xl font-bold" style={{ color: BRAND_COLORS.primary }}>
+            BOGDAŃSKI
+          </div>
+        </div>
+        <div className="h-6 w-px bg-gray-300 mx-4" />
+        <h1 className="text-2xl font-bold" style={{ color: BRAND_COLORS.secondary }}>
+          Konfigurator okien
+        </h1>
+      </div>
       
       {/* Windows list */}
       <div className="flex gap-4 mb-6 overflow-x-auto p-2">
@@ -304,7 +319,7 @@ const WindowConfigurator = () => {
                   type="number"
                   value={activeWindow.width}
                   onChange={(e) => updateWindow(activeWindowIndex, { 
-                    width: Math.max(50, Math.min(400, parseInt(e.target.value) || 50)) 
+                    width: Math.max(50, Math.min(300, parseInt(e.target.value) || 50)) 
                   })}
                   className="w-full p-2 border rounded"
                 />
