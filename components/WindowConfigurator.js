@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { Plus, Minus, X, Save } from 'lucide-react';
 
-// Brand colors from the website
+// Enhanced brand colors with additional shades
 const BRAND_COLORS = {
-  primary: '#D64541', // Red from the logo/website
-  secondary: '#2C3E50', // Dark blue/gray from the navigation
+  primary: '#D64541',
+  primaryLight: '#e57572',
+  primaryDark: '#b13b37',
+  secondary: '#2C3E50',
+  secondaryLight: '#3c526a',
   background: '#FFFFFF',
   text: '#333333',
   border: '#E5E7EB',
@@ -26,8 +29,8 @@ const WindowConfigurator = () => {
     id: Date.now(),
     type: type || 'Stałe',
     isActive: false,
-    width: width || 100, // Width percentage of the total window width
-    height: height || 100 // Height percentage of the total window height
+    width: width || 100,
+    height: height || 100
   });
 
   function createNewWindow() {
@@ -121,13 +124,40 @@ const WindowConfigurator = () => {
     return windowPrice * project.installationType.multiplier;
   };
 
+  // Helper function to get window color styles
+  const getWindowColorStyles = (colorName) => {
+    const colorMap = {
+      'Biały': {
+        border: '#ffffff',
+        shadow: '0 0 0 1px rgba(0,0,0,0.1)',
+        handles: '#909090'
+      },
+      'Czarny': {
+        border: '#222222',
+        shadow: '0 0 0 1px rgba(255,255,255,0.1)',
+        handles: '#404040'
+      },
+      'Antracyt': {
+        border: '#3c3c3c',
+        shadow: '0 0 0 1px rgba(255,255,255,0.1)',
+        handles: '#505050'
+      },
+      'Złoty Dąb': {
+        border: '#b68d4c',
+        shadow: '0 0 0 1px rgba(0,0,0,0.1)',
+        handles: '#8b6b3a'
+      }
+    };
+    return colorMap[colorName] || colorMap['Biały'];
+  };
+
   return (
     <div className="max-w-6xl mx-auto p-6 bg-white">
       {/* Logo and header */}
       <div className="flex items-center gap-2 mb-8">
         <div className="flex items-center gap-1">
           <div 
-            className="w-8 h-8 flex items-center justify-center text-white font-bold rounded"
+            className="w-8 h-8 flex items-center justify-center text-white font-bold rounded shadow-lg"
             style={{ backgroundColor: BRAND_COLORS.primary }}
           >
             B
@@ -147,8 +177,8 @@ const WindowConfigurator = () => {
         {project.windows.map((window, index) => (
           <div 
             key={window.id}
-            className={`flex items-center gap-2 p-3 rounded cursor-pointer transition-colors border-2
-              ${index === activeWindowIndex ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:bg-gray-50'}`}
+            className={`flex items-center gap-2 p-3 rounded cursor-pointer transition-all duration-200 border-2
+              ${index === activeWindowIndex ? 'border-red-500 bg-red-50 shadow-md' : 'border-gray-200 hover:bg-gray-50'}`}
             style={{ borderColor: index === activeWindowIndex ? BRAND_COLORS.primary : undefined }}
             onClick={() => setActiveWindowIndex(index)}
           >
@@ -158,7 +188,7 @@ const WindowConfigurator = () => {
                 e.stopPropagation();
                 removeWindow(index);
               }}
-              className="p-1 hover:bg-red-100 rounded"
+              className="p-1 hover:bg-red-100 rounded transition-colors"
             >
               <X size={16} />
             </button>
@@ -166,7 +196,7 @@ const WindowConfigurator = () => {
         ))}
         <button
           onClick={addWindow}
-          className="flex items-center gap-2 px-4 py-2 text-white rounded hover:bg-red-600"
+          className="flex items-center gap-2 px-4 py-2 text-white rounded hover:bg-red-600 transition-colors shadow-md"
           style={{ backgroundColor: BRAND_COLORS.primary }}
         >
           <Plus size={20} />
@@ -177,7 +207,7 @@ const WindowConfigurator = () => {
       {/* Configuration panel */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Controls */}
-        <div className="space-y-6 bg-gray-50 p-6 rounded-lg">
+        <div className="space-y-6 bg-gray-50 p-6 rounded-lg shadow-md">
           {/* Grid configuration */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Sekcje okna</label>
@@ -191,7 +221,7 @@ const WindowConfigurator = () => {
                       Math.max(1, activeWindow.columns - 1),
                       activeWindow.rows
                     )}
-                    className="p-1 hover:bg-gray-200 rounded"
+                    className="p-1 hover:bg-gray-200 rounded transition-colors"
                   >
                     <Minus size={16} />
                   </button>
@@ -202,7 +232,7 @@ const WindowConfigurator = () => {
                       Math.min(4, activeWindow.columns + 1),
                       activeWindow.rows
                     )}
-                    className="p-1 hover:bg-gray-200 rounded"
+                    className="p-1 hover:bg-gray-200 rounded transition-colors"
                   >
                     <Plus size={16} />
                   </button>
@@ -217,7 +247,7 @@ const WindowConfigurator = () => {
                       activeWindow.columns,
                       Math.max(1, activeWindow.rows - 1)
                     )}
-                    className="p-1 hover:bg-gray-200 rounded"
+                    className="p-1 hover:bg-gray-200 rounded transition-colors"
                   >
                     <Minus size={16} />
                   </button>
@@ -228,7 +258,7 @@ const WindowConfigurator = () => {
                       activeWindow.columns,
                       Math.min(4, activeWindow.rows + 1)
                     )}
-                    className="p-1 hover:bg-gray-200 rounded"
+                    className="p-1 hover:bg-gray-200 rounded transition-colors"
                   >
                     <Plus size={16} />
                   </button>
@@ -244,15 +274,15 @@ const WindowConfigurator = () => {
               {activeWindow.sections.map((section, index) => (
                 <div
                   key={section.id}
-                  className={`p-4 border rounded
-                    ${index === activeSectionIndex ? 'bg-red-50 border-red-500' : 'hover:bg-gray-50'}`}
+                  className={`p-4 border rounded transition-all duration-200
+                    ${index === activeSectionIndex ? 'bg-red-50 border-red-500 shadow-md' : 'hover:bg-gray-50'}`}
                 >
                   <div className="flex justify-between items-center mb-3">
                     <span className="font-medium">Sekcja {index + 1}</span>
                     <select
                       value={section.type}
                       onChange={(e) => updateSection(activeWindowIndex, index, { type: e.target.value })}
-                      className="p-1 border rounded"
+                      className="p-1 border rounded focus:ring-2 focus:ring-red-500 focus:border-red-500"
                     >
                       {windowTypes.map(type => (
                         <option key={type} value={type}>{type}</option>
@@ -281,7 +311,7 @@ const WindowConfigurator = () => {
                           onChange={(e) => updateSection(activeWindowIndex, index, { 
                             width: Math.max(20, Math.min(200, parseInt(e.target.value) || 100))
                           })}
-                          className="w-16 p-1 border rounded text-center"
+                          className="w-16 p-1 border rounded text-center focus:ring-2 focus:ring-red-500 focus:border-red-500"
                         />
                       </div>
                     </div>
@@ -304,7 +334,7 @@ const WindowConfigurator = () => {
                           onChange={(e) => updateSection(activeWindowIndex, index, { 
                             height: Math.max(20, Math.min(200, parseInt(e.target.value) || 100))
                           })}
-                          className="w-16 p-1 border rounded text-center"
+                          className="w-16 p-1 border rounded text-center focus:ring-2 focus:ring-red-500 focus:border-red-500"
                         />
                       </div>
                     </div>
@@ -326,7 +356,7 @@ const WindowConfigurator = () => {
                   onChange={(e) => updateWindow(activeWindowIndex, { 
                     width: Math.max(50, Math.min(300, parseInt(e.target.value) || 50)) 
                   })}
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border rounded focus:ring-2 focus:ring-red-500 focus:border-red-500"
                 />
               </div>
               <div>
@@ -337,7 +367,7 @@ const WindowConfigurator = () => {
                   onChange={(e) => updateWindow(activeWindowIndex, { 
                     height: Math.max(50, Math.min(300, parseInt(e.target.value) || 50)) 
                   })}
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border rounded focus:ring-2 focus:ring-red-500 focus:border-red-500"
                 />
               </div>
             </div>
@@ -350,7 +380,7 @@ const WindowConfigurator = () => {
               <select
                 value={activeWindow.material}
                 onChange={(e) => updateWindow(activeWindowIndex, { material: e.target.value })}
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded focus:ring-2 focus:ring-red-500 focus:border-red-500"
               >
                 {materials.map(material => (
                   <option key={material} value={material}>{material}</option>
@@ -362,7 +392,7 @@ const WindowConfigurator = () => {
               <select
                 value={activeWindow.glassType}
                 onChange={(e) => updateWindow(activeWindowIndex, { glassType: e.target.value })}
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded focus:ring-2 focus:ring-red-500 focus:border-red-500"
               >
                 {glassTypes.map(type => (
                   <option key={type} value={type}>{type}</option>
@@ -376,8 +406,8 @@ const WindowConfigurator = () => {
                   <button
                     key={color}
                     onClick={() => updateWindow(activeWindowIndex, { color })}
-                    className={`p-2 border rounded text-left
-                      ${activeWindow.color === color ? 'bg-red-100 border-red-500' : 'hover:bg-gray-100'}`}
+                    className={`p-2 border rounded text-left transition-colors
+                      ${activeWindow.color === color ? 'bg-red-100 border-red-500 shadow-sm' : 'hover:bg-gray-100'}`}
                   >
                     {color}
                   </button>
@@ -394,8 +424,8 @@ const WindowConfigurator = () => {
                 <button
                   key={type.type}
                   onClick={() => setProject(prev => ({ ...prev, installationType: type }))}
-                  className={`p-2 border rounded text-left
-                    ${project.installationType.type === type.type ? 'bg-red-100 border-red-500' : 'hover:bg-gray-100'}`}
+                  className={`p-2 border rounded text-left transition-colors
+                    ${project.installationType.type === type.type ? 'bg-red-100 border-red-500 shadow-sm' : 'hover:bg-gray-100'}`}
                 >
                   {type.type}
                 </button>
@@ -406,21 +436,25 @@ const WindowConfigurator = () => {
 
         {/* Preview */}
         <div className="space-y-6">
-          <div className="bg-gray-50 p-6 rounded-lg">
+          <div className="bg-gray-50 p-6 rounded-lg shadow-lg">
             <h3 className="text-lg font-medium mb-4">Podgląd</h3>
             <div className="relative w-full" style={{ paddingBottom: '100%' }}>
               <div className="absolute inset-0 flex items-center justify-center perspective-1000">
-                <div className="relative" style={{ transform: 'rotateX(10deg) rotateY(-20deg)' }}>
-                  {/* Wall backdrop */}
+                <div 
+                  className="relative transition-transform duration-500"
+                  style={{ transform: 'rotateX(10deg) rotateY(-20deg)' }}
+                >
+                  {/* Enhanced wall backdrop with texture */}
                   <div 
-                    className="absolute -inset-8 bg-gray-200"
+                    className="absolute -inset-8 bg-gradient-to-br from-gray-100 to-gray-300"
                     style={{
                       transform: 'translateZ(-20px)',
-                      boxShadow: 'inset 0 0 50px rgba(0,0,0,0.1)'
+                      boxShadow: 'inset 0 0 50px rgba(0,0,0,0.15)',
+                      backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(0,0,0,0.03) 20px, rgba(0,0,0,0.03) 21px)',
                     }}
                   />
                   
-                  {/* Window frame */}
+                  {/* Window frame with enhanced shadows and reflections */}
                   <div 
                     className="relative transition-all duration-300"
                     style={{
@@ -428,18 +462,24 @@ const WindowConfigurator = () => {
                       height: `${activeWindow.height}px`,
                       maxWidth: '100%',
                       maxHeight: '100%',
-                      backgroundColor: '#f5f5f5',
-                      boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
-                      border: `8px solid ${
-                        activeWindow.color === 'Biały' ? '#ffffff' :
-                        activeWindow.color === 'Czarny' ? '#222222' :
-                        activeWindow.color === 'Antracyt' ? '#3c3c3c' :
-                        activeWindow.color === 'Złoty Dąb' ? '#b68d4c' : '#ffffff'
-                      }`,
+                      backgroundColor: '#f8f9fa',
+                      boxShadow: '0 20px 25px rgba(0,0,0,0.3), inset 0 0 30px rgba(255,255,255,0.5)',
+                      border: `8px solid ${getWindowColorStyles(activeWindow.color).border}`,
                       borderRadius: '4px',
-                      transform: 'translateZ(0)'
+                      transform: 'translateZ(0)',
+                      position: 'relative',
+                      overflow: 'hidden'
                     }}
                   >
+                    {/* Glass reflection effect */}
+                    <div 
+                      className="absolute inset-0 opacity-20"
+                      style={{
+                        background: 'linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 50%, rgba(0,0,0,0.1) 100%)',
+                        pointerEvents: 'none'
+                      }}
+                    />
+
                     {/* Window sections grid */}
                     <div 
                       className="absolute inset-0 grid gap-1"
@@ -462,34 +502,37 @@ const WindowConfigurator = () => {
                       {activeWindow.sections.map((section, index) => (
                         <div
                           key={section.id}
-                          className={`relative border transition-all duration-300 ${
-                            index === activeSectionIndex ? 'border-red-500' : 'border-gray-300'
-                          }`}
+                          className={`relative border transition-all duration-300 cursor-pointer
+                            ${index === activeSectionIndex ? 'border-red-500 shadow-inner' : 'border-gray-300'}`}
                           onClick={() => setActiveSectionIndex(index)}
+                          style={{
+                            background: 'linear-gradient(to bottom right, rgba(255,255,255,0.1), rgba(0,0,0,0.05))'
+                          }}
                         >
                           {section.type !== 'Stałe' && (
                             <>
-                              {/* Handle */}
+                              {/* Enhanced handle with 3D effect */}
                               <div 
-                                className="absolute right-1 top-1/2 w-2 h-4 bg-gray-400 rounded-full"
+                                className="absolute right-1 top-1/2 w-2 h-4 rounded-full transition-all duration-300"
                                 style={{
                                   transform: 'translateY(-50%) translateZ(2px)',
-                                  boxShadow: '0 1px 2px rgba(0,0,0,0.2)'
+                                  background: `linear-gradient(90deg, ${getWindowColorStyles(activeWindow.color).handles}, ${getWindowColorStyles(activeWindow.color).handles})`,
+                                  boxShadow: '0 1px 3px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.2)'
                                 }}
                               />
                               
-                              {/* Opening indicators */}
+                              {/* Opening indicators with enhanced visibility */}
                               {section.type === 'Uchylno-rozwieralne' && (
                                 <>
-                                  <div className="absolute inset-x-0 top-0 h-0.5 bg-gray-300" />
-                                  <div className="absolute inset-y-0 right-0 w-0.5 bg-gray-300" />
+                                  <div className="absolute inset-x-0 top-0 h-0.5 bg-gray-400 opacity-50" />
+                                  <div className="absolute inset-y-0 right-0 w-0.5 bg-gray-400 opacity-50" />
                                 </>
                               )}
                               {section.type === 'Rozwierane' && (
-                                <div className="absolute inset-y-0 right-0 w-0.5 bg-gray-300" />
+                                <div className="absolute inset-y-0 right-0 w-0.5 bg-gray-400 opacity-50" />
                               )}
                               {section.type === 'Uchylne' && (
-                                <div className="absolute inset-x-0 top-0 h-0.5 bg-gray-300" />
+                                <div className="absolute inset-x-0 top-0 h-0.5 bg-gray-400 opacity-50" />
                               )}
                             </>
                           )}
@@ -503,14 +546,15 @@ const WindowConfigurator = () => {
           </div>
 
           {/* Pricing */}
-          <div className="bg-gray-50 p-6 rounded-lg">
+          <div className="bg-gray-50 p-6 rounded-lg shadow-md">
             <h3 className="text-lg font-medium mb-4">Wycena szacunkowa</h3>
             <div className="space-y-2">
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center p-2 bg-white rounded shadow-sm">
                 <span>Cena podstawowa:</span>
-                <span>{calculatePrice(activeWindow).toFixed(2)} zł</span>
+                <span className="font-medium">{calculatePrice(activeWindow).toFixed(2)} zł</span>
               </div>
-              <div className="flex justify-between font-medium">
+              <div className="flex justify-between items-center p-2 bg-white rounded shadow-sm font-medium" 
+                   style={{ color: BRAND_COLORS.primary }}>
                 <span>Suma (wszystkie okna):</span>
                 <span>
                   {project.windows.reduce((sum, window) => sum + calculatePrice(window), 0).toFixed(2)} zł
@@ -521,7 +565,7 @@ const WindowConfigurator = () => {
 
           {/* Save button */}
           <button 
-            className="w-full flex items-center justify-center gap-2 px-4 py-2 text-white rounded hover:bg-red-600"
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 text-white rounded hover:bg-red-600 transition-colors shadow-lg"
             style={{ backgroundColor: BRAND_COLORS.primary }}
           >
             <Save size={20} />
